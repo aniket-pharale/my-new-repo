@@ -16,7 +16,7 @@ jobs:
       with:
         node-version: '18.x'
         cache: 'npm'
-    - run: ${{ secrets.ABCD }}
+    - run: this is secrets :- ${{ secrets.ABCD }}
     - run: npm ci
     - run: npm install
     - run: npm run build --if-present
