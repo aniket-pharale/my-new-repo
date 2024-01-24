@@ -17,7 +17,7 @@ jobs:
         node-version: '18.x'
         cache: 'npm'
       env: # Or as an environment variable
-        super_secret: ${{ secrets.ABCD }}
+        super_secret: ${{ secrets.SECRET_FILES }}
     - run: echo "GH_REPO:$super_secret"
     - run: npm ci
     - run: npm install
