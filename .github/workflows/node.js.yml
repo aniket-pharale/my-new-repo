@@ -16,7 +16,7 @@ jobs:
       with:
         node-version: '18.x'
         cache: 'npm'
-    - run: echo ${{ secrets.ABCD }} 
+    - run: 'echo "IMG_NAME=$(echo secrets.ABCD)"'
     - run: npm ci
     - run: npm install
     - run: npm run build --if-present
