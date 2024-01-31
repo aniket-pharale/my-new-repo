@@ -37,9 +37,10 @@ jobs:
 
     - name: build and push the docker image
       env: 
+        secret: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
-        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+        gcloud auth activate-service-account --key-file=$secret
         gcloud auth configure-docker asia-south1-docker.pkg.dev
         docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest .
         docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest
