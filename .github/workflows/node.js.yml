@@ -26,8 +26,8 @@ jobs:
       with:
           create_credentials_file: true
           token_format: access_token
-          workload_identity_provider: projects/${{ secrets.GOOGLE_PROJECT }}/locations/global/workloadIdentityPools/-confixa-github-actions/providers/confixa-github-actions
-          service_account: github-actions-svc@${{ secrets.GOOGLE_PROJECT }}.iam.gserviceaccount.com
+          workload_identity_provider: projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/-confixa-github-actions/providers/confixa-github-actions
+          service_account: confixa-github-actions@${{ secrets.GOOGLE_PROJECT }}.iam.gserviceaccount.com
     # - name: install the gcloud cli
     #   uses: google-github-actions/setup-gcloud@v2.1.0
     #   with: 
