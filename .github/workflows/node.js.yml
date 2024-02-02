@@ -25,7 +25,7 @@ jobs:
     - name: Authenticate with Google Cloud
       uses: google-github-actions/auth@v2.1.0
       with:
-        workload_identity_provider: confixa-github-actions
+        workload_identity_provider: projects/confixa-rnd/locations/global/workloadIdentityPools/confixa-github-actions/providers/confixa-rnd
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         project_id: ${{secrets.GOOGLE_PROJECT}}
 
