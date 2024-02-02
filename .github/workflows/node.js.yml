@@ -64,14 +64,19 @@ jobs:
     #     project_id: ${{secrets.GOOGLE_PROJECT}}
     #     service_acccount_key: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
     #     export_default_credentials: true 
+    - name: Connect to Artifact Registry
+      run: |-
+          echo docker login -u ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}} -p "$(gcloud auth print-access-token)" asia-south1-docker.pkg.dev
 
-    - name: build and push the docker image
-      env: 
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-      run: |
-        gcloud auth configure-docker asia-south1-docker.pkg.dev
-        docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest .
-        docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest
+    - name: Build Docker Image
+      run: docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/abc:latest .
+    # - name: build and push the docker image
+    #   env: 
+    #     GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+    #   run: |
+    #     gcloud auth configure-docker asia-south1-docker.pkg.dev
+    #     docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest .
+    #     docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest
 
 # name: gcp-main
 # on:
