@@ -30,14 +30,15 @@ jobs:
         # token_format: access_token
         # workload_identity_provider: projects/confixa-rnd/locations/global/workloadIdentityPools/confixa-github-actions/providers/confixa-rnd
     
-    # - name: Use Node.js
-    #   uses: actions/setup-node@v3
-    #   with:
-    #     node-version: '18.x'
-    #     cache: 'npm'
-    # - run: npm ci
-    # - run: npm install
-    # - run: npm run build --if-present
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+    - run: |
+        npm ci
+        npm install
+        npm run build --if-present
     
     # - uses: google-github-actions/setup-gcloud@master
     #   with:
@@ -64,18 +65,18 @@ jobs:
     #     service_acccount_key: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
     #     export_default_credentials: true 
 
-    # - name: build and push the docker image
-    #   env: 
-    #     GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-    #   run: |
-    #     gcloud auth print-identity-token --audiences=projects/796292922550/locations/global/workloadIdentityPools/confixa-github-actions/providers/confixa-github-actions
-    #     echo "Token: $ACTIONS_ID_TOKEN_REQUEST_TOKEN"
-    #     gcloud auth configure-docker
-    #     gcloud auth list
-    #     gcloud config list
-    #     gcloud auth configure-docker asia-south1-docker.pkg.dev
-    #     docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest .
-    #     docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest
+    - name: build and push the docker image
+      env: 
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+      run: |
+        gcloud auth print-identity-token --audiences=projects/796292922550/locations/global/workloadIdentityPools/confixa-github-actions/providers/confixa-github-actions
+        echo "Token: $ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+        gcloud auth configure-docker
+        gcloud auth list
+        gcloud config list
+        gcloud auth configure-docker asia-south1-docker.pkg.dev
+        docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest .
+        docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/nginx:latest
 
 # name: gcp-main
 # on:
