@@ -69,7 +69,9 @@ jobs:
           echo docker login -u _json_key -p "$(gcloud auth print-access-token)" asia-south1-docker.pkg.dev
 
     - name: Build Docker Image
-      run: docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/abc:latest .
+      run: | 
+        docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/abc:latest .
+        docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/abc:latest
     # - name: build and push the docker image
     #   env: 
     #     GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
