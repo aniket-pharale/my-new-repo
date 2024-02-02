@@ -23,7 +23,7 @@ jobs:
     - run: npm install
     - run: npm run build --if-present
     - name: Authenticate with Google Cloud
-      uses: google-github-actions/auth@main
+      uses: google-github-actions/authh@v2
       with:
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         project_id: ${{secrets.GOOGLE_PROJECT}}
