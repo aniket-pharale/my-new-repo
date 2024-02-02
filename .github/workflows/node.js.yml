@@ -22,12 +22,20 @@ jobs:
     - run: npm ci
     - run: npm install
     - run: npm run build --if-present
-
-    - uses: google-github-actions/setup-gcloud@master
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@main
       with:
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        project_id: ${{ env.GOOGLE_PROJECT }}
-        export_default_credentials: true
+        project_id: ${{secrets.GOOGLE_PROJECT}}
+
+    - name: Configure gcloud CLI
+      run: gcloud config set project ${{secrets.GOOGLE_PROJECT}}
+
+    # - uses: google-github-actions/setup-gcloud@master
+    #   with:
+    #     service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+    #     project_id: ${{ env.GOOGLE_PROJECT }}
+    #     export_default_credentials: true
         
     # - id: "auth"
     #   name: "Obtain access token by using workload identity federation"
