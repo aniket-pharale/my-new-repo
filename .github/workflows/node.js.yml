@@ -26,7 +26,6 @@ jobs:
     - id: "auth"
     - name: Authenticate with Google Cloud
       uses: "google-github-actions/auth@v1"
-      
       with:
           # create_credentials_file: true
           # token_format: access_token
