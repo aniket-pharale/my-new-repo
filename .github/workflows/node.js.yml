@@ -35,7 +35,7 @@ jobs:
     - name: Checkout Destination Repository
       uses: actions/checkout@v2
       with:
-          repository: https://github.com/confixa/confixa-gitops/  # Replace <destination-repo> with the destination repository's URL
+          repository: confixa/confixa-gitops/  # Replace <destination-repo> with the destination repository's URL
           ref: confixa-gitops  # Specify the branch or tag you want to checkout
 
     - name: Update Deployment File
