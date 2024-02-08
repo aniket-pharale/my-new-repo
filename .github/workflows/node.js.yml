@@ -37,12 +37,17 @@ jobs:
       with:
           repository: confixa/confixa-gitops  # Replace <destination-repo> with the destination repository's URL
           ref: confixa-gitops  # Specify the branch or tag you want to checkout
-
+    
+    - name: Verify Repository
+      run: |
+          ls -al
+          cat confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+          
     - name: Update Deployment File
       run: |
           # Update image file name in deployment.yaml using yq
-          yq eval '.spec.containers[0].image |= sub("old-image-filename"; "new-image-filename")' https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml > https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp
-          mv https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+          yq eval '.spec.containers[0].image |= sub("old-image-filename"; "new-image-filename")' confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml > confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp
+          mv confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
 
     - name: Commit and Push Changes
       run: |
