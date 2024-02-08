@@ -31,7 +31,12 @@ jobs:
         gcloud auth configure-docker asia-south1-docker.pkg.dev
         docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7 .
         docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7
-  
+   
+    - name: Test Authentication
+      run: git clone https://github.com/confixa/confixa-gitops.git
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
     - name: Checkout Destination Repository
       uses: actions/checkout@v2
       with:
