@@ -1,53 +1,3 @@
-# name: gcp-main
-# on:
-#   push:
-#     branches:
-#       - main
-      
-# jobs:
-#   gcp-dev:
-#     name: Build and Push to GCP
-#     runs-on: ubuntu-latest
-
-    
-
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v2
-    
-#     # Authenticate to Google Cloud using workload identity federation
-#     - id: "auth"
-#       name: "Obtain access token by using workload identity federation"
-#       uses: "google-github-actions/auth@v1"
-
-#       with:
-#           # create_credentials_file: true
-#           # token_format: access_token
-#           workload_identity_provider: projects/796292922550/locations/global/workloadIdentityPools/confixa-github-actions/providers/congfixa-github-actions
-#           service_account: github-action@confixa-rnd.iam.gserviceaccount.com
-
-#     # - name: Authenticate with Google Cloud
-#     #   uses: google-github-actions/auth@v0
-#     #   with:
-#     #     credentials: 0c828502b577634ea7436809a43a3e14a4a04e5a
-                  
-#     - name: Connect to Artifact Registry
-#       run: |-
-#           gcloud auth configure-docker --quiet
-#           gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
-#           # echo ${{ steps.auth.outputs.access_token }} | docker login -u oauth2accesstoken --password-stdin https://asia-south1-docker.pkg.dev
-
-#     - name: Build Docker Image
-#       run: docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/abc:$GITHUB_REF_NAME-$GITHUB_SHA .
-
-#     - uses: actions/checkout@v2
-#     - name: Set env
-#       run: echo "GITHUB_BRANCH=$(echo $GITHUB_REF_NAME-$GITHUB_SHA)" >> $GITHUB_ENV
-
-#     - name: Push Docker Image to Artifact Registry
-#       run: |-
-#         docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/abc:$GITHUB_REF_NAME-$GITHUB_SHA
-
 name: Push to GCP
 
 on:
@@ -82,3 +32,22 @@ jobs:
         docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7 .
         docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7
   
+    - name: Checkout Destination Repository
+      uses: actions/checkout@v2
+      with:
+          repository: https://github.com/confixa/confixa-gitops/  # Replace <destination-repo> with the destination repository's URL
+          ref: confixa-gitops  # Specify the branch or tag you want to checkout
+
+    - name: Update Deployment File
+      run: |
+          # Update image file name in deployment.yaml using yq
+          yq eval '.spec.containers[0].image |= sub("old-image-filename"; "new-image-filename")' https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml > https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp
+          mv https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp https://github.com/confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+
+    - name: Commit and Push Changes
+      run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add path/to/deployment.yaml
+          git commit -m "Update image file name in deployment file"
+          git push https://${{ secrets.TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
