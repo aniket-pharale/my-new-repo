@@ -33,7 +33,7 @@ jobs:
         docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7
    
     - name: Test Authentication
-      run: git clone https://github.com/confixa/confixa-gitops.git
+      run: git clone confixa/confixa-gitops.git
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
