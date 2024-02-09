@@ -1,3 +1,11 @@
-FROM nginx:latest
+FROM node:latest
 
-RUN echo "hello world" > /usr/share/nginx/html/index.html
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD [ "node", "index.js" ]
