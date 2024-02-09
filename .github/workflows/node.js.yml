@@ -3,7 +3,7 @@ name: Push to GCP
 on:
   push:
     branches:
-    - 'main'
+    - 'develop'
 
 permissions:
     id-token: write
@@ -29,35 +29,108 @@ jobs:
         GOOGLE_PROJECT: confixa-rnd
       run: |
         gcloud auth configure-docker asia-south1-docker.pkg.dev
-        docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7 .
-        docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7
-   
-    - name: Test Authentication
-      run: git clone confixa/confixa-gitops.git
-      env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:${{ github.sha }} .
+        # docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:${{ github.sha }}
+        
+    - name: Push Docker Image to Artifact Registry
+      run: |
+        docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:${{ github.sha }}
+        git clone https://aniket-pharale:${{ secrets.TOKEN }}@github.com/confixa/confixa-gitops
+        cd confixa-gitops
+        
+        git checkout confixa-gitops
 
-    - name: Checkout Destination Repository
-      uses: actions/checkout@v2
-      with:
-          repository: confixa/confixa-gitops  # Replace <destination-repo> with the destination repository's URL
-          ref: confixa-gitops  # Specify the branch or tag you want to checkout
+        git config user.name "aniket-pharale"
+        git config user.email "aniket.pharale@wohlig.com"
+
+        yq e '.spec.template.spec.containers[0].image = "asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images:confixa-gitops"' -i deployment.apps/dev-confixa-backend.yaml
+
+        git add .
+        git commit -m "updating newer image"  
+        git push --set-upstream origin main
+    # - name: Checkout Destination Repository
+    #   uses: actions/checkout@v2
+    #   with:
+    #       repository: confixa/confixa-gitops  # Replace <destination-repo> with the destination repository's URL
+    #       ref: confixa-gitops  # Specify the branch or tag you want to checkout
     
-    - name: Verify Repository
-      run: |
-          ls -al
-          cat confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+    # - name: Verify Repository
+    #   run: |
+    #       ls -al
+    #       cat confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
           
-    - name: Update Deployment File
-      run: |
-          # Update image file name in deployment.yaml using yq
-          yq eval '.spec.containers[0].image |= sub("old-image-filename"; "new-image-filename")' confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml > confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp
-          mv confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+    # - name: Update Deployment File
+    #   run: |
+    #       # Update image file name in deployment.yaml using yq
+    #       yq eval '.spec.containers[0].image |= sub("old-image-filename"; "new-image-filename")' confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml > confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp
+    #       mv confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+    # - name: Commit and Push Changes
+    #   run: |
+    #       git config --global user.email "actions@github.com"
+    #       git config --global user.name "GitHub Actions"
+    #       git add path/to/deployment.yaml
+    #       git commit -m "Update image file name in deployment file"
+    #       git push https://${{ secrets.TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+# name: Push to GCP
 
-    - name: Commit and Push Changes
-      run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add path/to/deployment.yaml
-          git commit -m "Update image file name in deployment file"
-          git push https://${{ secrets.TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+# on:
+#   push:
+#     branches:
+#     - 'main'
+
+# permissions:
+#     id-token: write
+#     contents: read
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+
+#     - name: code checkout
+#       uses: actions/checkout@v2
+
+#     - name: install the gcloud cli
+#       uses: google-github-actions/setup-gcloud@v0
+#       with:
+#         project_id: confixa-rnd
+#         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+#         export_default_credentials: true
+
+#     - name: build and push the docker image
+#       env:
+#         GOOGLE_PROJECT: confixa-rnd
+#       run: |
+#         gcloud auth configure-docker asia-south1-docker.pkg.dev
+#         docker build -t asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7 .
+#         docker push asia-south1-docker.pkg.dev/confixa-rnd/confixa-docker-images/dev-confixa-backend:develop-7
+   
+#     - name: Test Authentication
+#       run: git clone confixa/confixa-gitops.git
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+#     - name: Checkout Destination Repository
+#       uses: actions/checkout@v2
+#       with:
+#           repository: confixa/confixa-gitops  # Replace <destination-repo> with the destination repository's URL
+#           ref: confixa-gitops  # Specify the branch or tag you want to checkout
+    
+#     - name: Verify Repository
+#       run: |
+#           ls -al
+#           cat confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+          
+#     - name: Update Deployment File
+#       run: |
+#           # Update image file name in deployment.yaml using yq
+#           yq eval '.spec.containers[0].image |= sub("old-image-filename"; "new-image-filename")' confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml > confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp
+#           mv confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml.tmp confixa/confixa-gitops/blob/confixa-gitops/deployment.apps/dev-confixa-backend.yaml
+
+#     - name: Commit and Push Changes
+#       run: |
+#           git config --global user.email "actions@github.com"
+#           git config --global user.name "GitHub Actions"
+#           git add path/to/deployment.yaml
+#           git commit -m "Update image file name in deployment file"
+#           git push https://${{ secrets.TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
